@@ -30,28 +30,20 @@ export const addProduct = async (productData) => {
 };
 
 export const updateProduct = async (productId, updates) => {
-  const products = await getAll(STORAGE_KEYS.PRODUCTS);
-  const index = products.findIndex((p) => p.id === productId);
-  if (index === -1) throw new Error("Товар не найден");
-
-  const oldProduct = products[index];
-  const needsModeration =
-    updates.name !== oldProduct.name ||
-    updates.description !== oldProduct.description ||
-    updates.category !== oldProduct.category ||
-    updates.price > oldProduct.price; // только увеличение цены требует модерации
-
+  const products = await getAll(STORAGE_KEYS.PRODUCTS)
+  const index = products.findIndex(p => p.id === productId)
+  if (index === -1) throw new Error('Товар не найден')
+  
   const updatedProduct = {
-    ...oldProduct,
+    ...products[index],
     ...updates,
-    status: needsModeration ? "pending" : oldProduct.status,
     updatedAt: new Date().toISOString(),
-  };
-
-  products[index] = updatedProduct;
-  await saveAll(STORAGE_KEYS.PRODUCTS, products);
-  return updatedProduct;
-};
+  }
+  
+  products[index] = updatedProduct
+  await saveAll(STORAGE_KEYS.PRODUCTS, products)
+  return updatedProduct
+}
 
 export const deleteProduct = async (productId) => {
   const products = await getAll(STORAGE_KEYS.PRODUCTS);

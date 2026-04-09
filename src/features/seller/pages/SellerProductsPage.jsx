@@ -8,6 +8,7 @@ import {
   updateProduct,
 } from "@/features/products/services/productService";
 import { setProducts } from "@/features/products/store/productsSlice";
+import { useToast } from "@/shared/context/ToastContext";
 import StockModal from "../components/StockModal";
 import styles from "./SellerProductsPage.module.css";
 
@@ -15,6 +16,7 @@ const SellerProductsPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { user } = useSelector((state) => state.auth);
+  const { addToast } = useToast();
   const [loading, setLoading] = useState(true);
   const [sellerProducts, setSellerProducts] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState(null);
@@ -29,21 +31,24 @@ const SellerProductsPage = () => {
         dispatch(setProducts(products));
       } catch (err) {
         console.error("Ошибка загрузки товаров", err);
+        addToast("Ошибка загрузки товаров", "error");
       } finally {
         setLoading(false);
       }
     };
     loadProducts();
-  }, [user, dispatch]);
+  }, [user, dispatch, addToast]);
 
   const handleDelete = async (productId) => {
-    if (window.confirm("Удалить товар? Это действие нельзя отменить.")) {
+    const product = sellerProducts.find(p => p.id === productId);
+    if (window.confirm(`Удалить товар "${product?.name}"? Это действие нельзя отменить.`)) {
       try {
         await deleteProduct(productId);
         setSellerProducts((prev) => prev.filter((p) => p.id !== productId));
+        addToast(`Товар "${product?.name}" удалён`, "success");
       } catch (err) {
         console.error("Ошибка удаления", err);
-        alert("Не удалось удалить товар");
+        addToast("Не удалось удалить товар", "error");
       }
     }
   };

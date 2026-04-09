@@ -4,7 +4,7 @@ const STORAGE_KEYS = {
   ORDERS: 'orders',
   CART: 'cart',
   REVIEWS: 'reviews',
-  ORDERS_BY_USER: 'ordersByUser'
+  ORDERS_BY_USER: 'ordersByUser',
 }
 
 const getItem = (key) => {

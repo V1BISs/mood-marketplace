@@ -16,7 +16,10 @@ import SellerProductsPage from "@/features/seller/pages/SellerProductsPage";
 import NewProductPage from "@/features/seller/pages/NewProductPage";
 import EditProductPage from "@/features/seller/pages/EditProductPage";
 import SellerOrdersPage from "@/features/seller/pages/SellerOrdersPage";
-import SellerStatisticsPage from '@/features/seller/pages/SellerStatisticsPage'
+import SellerStatisticsPage from "@/features/seller/pages/SellerStatisticsPage";
+import ModerationPage from "@/features/admin/pages/ModerationPage";
+import UsersPage from "@/features/admin/pages/UsersPage";
+import AllOrdersPage from '@/features/admin/pages/AllOrdersPage'
 
 export const router = createBrowserRouter([
   {
@@ -129,6 +132,36 @@ export const router = createBrowserRouter([
           <RequireAuth>
             <RequireRole role="seller" redirectTo="/catalog">
               <SellerStatisticsPage />
+            </RequireRole>
+          </RequireAuth>
+        ),
+      },
+      {
+        path: "admin/moderation",
+        element: (
+          <RequireAuth>
+            <RequireRole role="admin" redirectTo="/catalog">
+              <ModerationPage />
+            </RequireRole>
+          </RequireAuth>
+        ),
+      },
+      {
+        path: "admin/users",
+        element: (
+          <RequireAuth>
+            <RequireRole role="admin" redirectTo="/catalog">
+              <UsersPage />
+            </RequireRole>
+          </RequireAuth>
+        ),
+      },
+      {
+        path: "admin/orders",
+        element: (
+          <RequireAuth>
+            <RequireRole role="admin" redirectTo="/catalog">
+              <AllOrdersPage />
             </RequireRole>
           </RequireAuth>
         ),

@@ -1,12 +1,14 @@
 import { useDispatch, useSelector } from 'react-redux'
 import { updateQuantity, removeFromCart } from '../services/cartService'
 import { setItems } from '../store/cartSlice'
+import { useToast } from '@/shared/context/ToastContext'
 import styles from './CartItem.module.css'
 
 const CartItem = ({ item, isSelected, onSelect }) => {
   const dispatch = useDispatch()
   const { user } = useSelector(state => state.auth)
   const { items } = useSelector(state => state.cart)
+  const { addToast } = useToast()
   
   const handleQuantityChange = async (newQuantity) => {
     const maxStock = item.product.stock
@@ -20,7 +22,9 @@ const CartItem = ({ item, isSelected, onSelect }) => {
       
       try {
         await updateQuantity(user.id, item.productId, validQuantity)
+        addToast(`Количество товара "${item.product.name}" изменено`, 'success')
       } catch (err) {
+        addToast('Не удалось обновить количество', 'error')
         const { getCart } = await import('../services/cartService')
         const updatedCart = await getCart(user.id)
         dispatch(setItems(updatedCart.items))
@@ -34,7 +38,9 @@ const CartItem = ({ item, isSelected, onSelect }) => {
     
     try {
       await removeFromCart(user.id, item.productId)
+      addToast(`Товар "${item.product.name}" удалён из корзины`, 'success')
     } catch (err) {
+      addToast('Не удалось удалить товар', 'error')
       const { getCart } = await import('../services/cartService')
       const updatedCart = await getCart(user.id)
       dispatch(setItems(updatedCart.items))

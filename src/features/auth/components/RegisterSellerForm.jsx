@@ -43,7 +43,7 @@ const RegisterSellerForm = () => {
 
       const user = await registerUser(formData);
       dispatch(setUser(user));
-      localStorage.setItem("user", JSON.stringify(user)); // добавить
+      localStorage.setItem("user", JSON.stringify(user));
       navigate("/login");
     } catch (err) {
       setError(err.message);

@@ -1,12 +1,15 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
+import { FiTrash2, FiX, FiPlus } from "react-icons/fi";
 import { addProduct } from "@/features/products/services/productService";
+import { useToast } from "@/shared/context/ToastContext";
 import styles from "./NewProductPage.module.css";
 
 const NewProductPage = () => {
   const navigate = useNavigate();
   const { user } = useSelector((state) => state.auth);
+  const { addToast } = useToast();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [imageFiles, setImageFiles] = useState([]);
@@ -54,16 +57,16 @@ const NewProductPage = () => {
 
     for (const file of files) {
       if (newImages.length >= 5) {
-        alert("Максимум 5 фотографий");
+        addToast("Максимум 5 фотографий", "error");
         break;
       }
 
       if (!file.type.startsWith("image/")) {
-        alert("Можно загружать только изображения");
+        addToast("Можно загружать только изображения", "error");
         continue;
       }
       if (file.size > 5 * 1024 * 1024) {
-        alert("Файл не должен превышать 5MB");
+        addToast("Файл не должен превышать 5MB", "error");
         continue;
       }
 
@@ -71,8 +74,10 @@ const NewProductPage = () => {
         const base64 = await fileToBase64(file);
         newImages.push(base64);
         newImageFiles.push(file);
+        addToast(`Фото "${file.name}" загружено`, "success");
       } catch (err) {
         console.error("Ошибка загрузки файла", err);
+        addToast("Ошибка загрузки файла", "error");
       }
     }
 
@@ -85,6 +90,7 @@ const NewProductPage = () => {
     const newImageFiles = imageFiles.filter((_, i) => i !== index);
     setFormData((prev) => ({ ...prev, images: newImages }));
     setImageFiles(newImageFiles);
+    addToast("Фото удалено", "info");
   };
 
   const handleChange = (e) => {
@@ -167,6 +173,7 @@ const NewProductPage = () => {
     const validationError = validateForm();
     if (validationError) {
       setError(validationError);
+      addToast(validationError, "error");
       return;
     }
 
@@ -191,9 +198,11 @@ const NewProductPage = () => {
       };
 
       await addProduct(productData);
+      addToast("Товар успешно создан и отправлен на модерацию", "success");
       navigate("/seller/products");
     } catch (err) {
       setError("Ошибка при создании товара");
+      addToast("Ошибка при создании товара", "error");
       console.error(err);
     } finally {
       setLoading(false);
@@ -267,7 +276,7 @@ const NewProductPage = () => {
                     type="button"
                     onClick={() => handleRemoveImage(index)}
                   >
-                    ✕
+                    <FiX />
                   </button>
                 </div>
               ))}
@@ -280,7 +289,7 @@ const NewProductPage = () => {
                     onChange={handleImageUpload}
                     style={{ display: "none" }}
                   />
-                  <span>+ Добавить фото</span>
+                  <span><FiPlus /> Добавить фото</span>
                 </label>
               )}
             </div>
@@ -355,7 +364,7 @@ const NewProductPage = () => {
                     onChange={(e) => handleSizeChange(index, e.target.value)}
                   />
                   <button type="button" onClick={() => handleRemoveSize(index)}>
-                    🗑️
+                    <FiTrash2 />
                   </button>
                 </div>
               ))}
@@ -364,7 +373,7 @@ const NewProductPage = () => {
                 onClick={handleAddSize}
                 className={styles.addBtn}
               >
-                + Добавить размер
+                <FiPlus /> Добавить размер
               </button>
 
               <h2 style={{ marginTop: "24px" }}>Цвета</h2>
@@ -380,7 +389,7 @@ const NewProductPage = () => {
                     type="button"
                     onClick={() => handleRemoveColor(index)}
                   >
-                    🗑️
+                    <FiTrash2 />
                   </button>
                 </div>
               ))}
@@ -389,7 +398,7 @@ const NewProductPage = () => {
                 onClick={handleAddColor}
                 className={styles.addBtn}
               >
-                + Добавить цвет
+                <FiPlus /> Добавить цвет
               </button>
             </div>
           )}
@@ -420,7 +429,7 @@ const NewProductPage = () => {
                     type="button"
                     onClick={() => handleRemoveSpecification(index)}
                   >
-                    🗑️
+                    <FiTrash2 />
                   </button>
                 </div>
               ))}
@@ -430,7 +439,7 @@ const NewProductPage = () => {
                 onClick={handleAddSpecification}
                 className={styles.addBtn}
               >
-                + Добавить характеристику
+                <FiPlus /> Добавить характеристику
               </button>
             </div>
           )}

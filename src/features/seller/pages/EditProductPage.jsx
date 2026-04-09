@@ -3,12 +3,14 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import { FiTrash2, FiX, FiPlus } from 'react-icons/fi'
 import { getProductById, updateProduct, deleteProduct } from '@/features/products/services/productService'
+import { useToast } from '@/shared/context/ToastContext'
 import styles from './NewProductPage.module.css'
 
 const EditProductPage = () => {
   const { productId } = useParams()
   const navigate = useNavigate()
   const { user } = useSelector(state => state.auth)
+  const { addToast } = useToast()
   const [loading, setLoading] = useState(false)
   const [initialLoading, setInitialLoading] = useState(true)
   const [error, setError] = useState('')
@@ -40,10 +42,12 @@ const EditProductPage = () => {
         const product = await getProductById(productId)
         if (!product) {
           setError('Товар не найден')
+          addToast('Товар не найден', 'error')
           return
         }
         if (product.sellerId !== user.id) {
           setError('У вас нет прав для редактирования этого товара')
+          addToast('У вас нет прав для редактирования этого товара', 'error')
           return
         }
         setFormData({
@@ -61,12 +65,13 @@ const EditProductPage = () => {
         })
       } catch (err) {
         setError('Ошибка загрузки товара')
+        addToast('Ошибка загрузки товара', 'error')
       } finally {
         setInitialLoading(false)
       }
     }
     loadProduct()
-  }, [productId, user.id])
+  }, [productId, user.id, addToast])
 
   const fileToBase64 = (file) => {
     return new Promise((resolve, reject) => {
@@ -84,16 +89,16 @@ const EditProductPage = () => {
     
     for (const file of files) {
       if (newImages.length >= 5) {
-        alert('Максимум 5 фотографий')
+        addToast('Максимум 5 фотографий', 'error')
         break
       }
       
       if (!file.type.startsWith('image/')) {
-        alert('Можно загружать только изображения')
+        addToast('Можно загружать только изображения', 'error')
         continue
       }
       if (file.size > 5 * 1024 * 1024) {
-        alert('Файл не должен превышать 5MB')
+        addToast('Файл не должен превышать 5MB', 'error')
         continue
       }
       
@@ -103,6 +108,7 @@ const EditProductPage = () => {
         newImageFiles.push(file)
       } catch (err) {
         console.error('Ошибка загрузки файла', err)
+        addToast('Ошибка загрузки файла', 'error')
       }
     }
     
@@ -194,6 +200,7 @@ const EditProductPage = () => {
     const validationError = validateForm()
     if (validationError) {
       setError(validationError)
+      addToast(validationError, 'error')
       return
     }
 
@@ -214,9 +221,11 @@ const EditProductPage = () => {
       }
       
       await updateProduct(productId, productData)
+      addToast('Товар успешно обновлён', 'success')
       navigate('/seller/products')
     } catch (err) {
       setError('Ошибка при обновлении товара')
+      addToast('Ошибка при обновлении товара', 'error')
       console.error(err)
     } finally {
       setLoading(false)
@@ -227,9 +236,11 @@ const EditProductPage = () => {
     if (window.confirm('Удалить товар? Это действие нельзя отменить.')) {
       try {
         await deleteProduct(productId)
+        addToast('Товар успешно удалён', 'success')
         navigate('/seller/products')
       } catch (err) {
         setError('Ошибка при удалении товара')
+        addToast('Ошибка при удалении товара', 'error')
       }
     }
   }
@@ -290,7 +301,9 @@ const EditProductPage = () => {
               {formData.images.map((url, index) => (
                 <div key={index} className={styles.imagePreviewItem}>
                   <img src={url} alt={`preview ${index}`} />
-                  <button type="button" onClick={() => handleRemoveImage(index)}>✕</button>
+                  <button type="button" onClick={() => handleRemoveImage(index)}>
+                    <FiX />
+                  </button>
                 </div>
               ))}
               {formData.images.length < 5 && (
@@ -302,7 +315,7 @@ const EditProductPage = () => {
                     onChange={handleImageUpload}
                     style={{ display: 'none' }}
                   />
-                  <span>+ Добавить фото</span>
+                  <span><FiPlus /> Добавить фото</span>
                 </label>
               )}
             </div>
@@ -376,11 +389,13 @@ const EditProductPage = () => {
                     value={size}
                     onChange={(e) => handleSizeChange(index, e.target.value)}
                   />
-                  <button type="button" onClick={() => handleRemoveSize(index)}>🗑️</button>
+                  <button type="button" onClick={() => handleRemoveSize(index)}>
+                    <FiTrash2 />
+                  </button>
                 </div>
               ))}
               <button type="button" onClick={handleAddSize} className={styles.addBtn}>
-                + Добавить размер
+                <FiPlus /> Добавить размер
               </button>
               
               <h2 style={{ marginTop: '24px' }}>Цвета</h2>
@@ -392,11 +407,13 @@ const EditProductPage = () => {
                     value={color}
                     onChange={(e) => handleColorChange(index, e.target.value)}
                   />
-                  <button type="button" onClick={() => handleRemoveColor(index)}>🗑️</button>
+                  <button type="button" onClick={() => handleRemoveColor(index)}>
+                    <FiTrash2 />
+                  </button>
                 </div>
               ))}
               <button type="button" onClick={handleAddColor} className={styles.addBtn}>
-                + Добавить цвет
+                <FiPlus /> Добавить цвет
               </button>
             </div>
           )}
@@ -419,19 +436,21 @@ const EditProductPage = () => {
                     value={spec.value}
                     onChange={(e) => handleSpecificationChange(index, 'value', e.target.value)}
                   />
-                  <button type="button" onClick={() => handleRemoveSpecification(index)}>🗑️</button>
+                  <button type="button" onClick={() => handleRemoveSpecification(index)}>
+                    <FiTrash2 />
+                  </button>
                 </div>
               ))}
               
               <button type="button" onClick={handleAddSpecification} className={styles.addBtn}>
-                + Добавить характеристику
+                <FiPlus /> Добавить характеристику
               </button>
             </div>
           )}
           
           <div className={styles.actions}>
             <button type="button" onClick={handleDelete} className={styles.deleteBtn}>
-              Удалить товар
+              <FiTrash2 /> Удалить товар
             </button>
             <div>
               <button type="button" onClick={() => navigate('/seller/products')} className={styles.cancelBtn}>

@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import styles from './ProfilePage.module.css'
 
-const AdminProfile = ({ user }) => {
+const AdminProfile = () => {
   return (
     <div>
       <h1 className={styles.title}>Админ-панель</h1>

@@ -1,18 +1,23 @@
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { FaStar, FaStarHalfAlt, FaRegStar } from 'react-icons/fa'
+import { FiRotateCcw } from 'react-icons/fi'
 import { addToCart, getCart } from '@/features/cart/services/cartService'
 import { setItems } from '@/features/cart/store/cartSlice'
+import { updateProduct } from '@/features/products/services/productService'
+import { useToast } from '@/shared/context/ToastContext'
 import styles from './ProductCard.module.css'
 
 const ProductCard = ({ product }) => {
   const dispatch = useDispatch()
   const navigate = useNavigate()
   const { user } = useSelector(state => state.auth)
+  const { addToast } = useToast()
 
   const handleAddToCart = async () => {
     if (!user) {
       navigate('/login')
+      addToast('Войдите, чтобы добавить товар в корзину', 'info')
       return
     }
 
@@ -22,16 +27,32 @@ const ProductCard = ({ product }) => {
       const currentQuantity = existingItem ? existingItem.quantity : 0
       
       if (currentQuantity + 1 > product.stock) {
-        alert(`Нельзя добавить больше ${product.stock} шт. товара "${product.name}"`)
+        addToast(`Нельзя добавить больше ${product.stock} шт. товара "${product.name}"`, 'error')
         return
       }
 
       await addToCart(user.id, product.id, product, 1)
       const updatedCart = await getCart(user.id)
       dispatch(setItems(updatedCart.items))
+      addToast(`"${product.name}" добавлен в корзину`, 'success')
     } catch (err) {
       console.error('Ошибка добавления в корзину', err)
-      alert('Не удалось добавить товар в корзину')
+      addToast('Не удалось добавить товар в корзину', 'error')
+    }
+  }
+
+  const handleReturnToModeration = async () => {
+    if (window.confirm(`Вернуть товар "${product.name}" на модерацию?`)) {
+      try {
+        await updateProduct(product.id, { status: 'pending', moderationComment: 'Возвращён на модерацию администратором' })
+        addToast(`Товар "${product.name}" возвращён на модерацию`, 'success')
+        setTimeout(() => {
+          window.location.reload()
+        }, 1000)
+      } catch (err) {
+        console.error('Ошибка возврата на модерацию', err)
+        addToast('Не удалось вернуть товар на модерацию', 'error')
+      }
     }
   }
 
@@ -56,6 +77,8 @@ const ProductCard = ({ product }) => {
     
     return stars
   }
+
+  const isAdmin = user?.role === 'admin'
 
   return (
     <div className={styles.card}>
@@ -82,13 +105,24 @@ const ProductCard = ({ product }) => {
           <p className={styles.stock}>В наличии: {product.stock} шт</p>
         </div>
       </div>
-      <button 
-        className={styles.button} 
-        onClick={handleAddToCart}
-        disabled={product.stock === 0}
-      >
-        {product.stock === 0 ? 'Нет в наличии' : 'В корзину'}
-      </button>
+      <div className={styles.buttonGroup}>
+        <button 
+          className={styles.button} 
+          onClick={handleAddToCart}
+          disabled={product.stock === 0}
+        >
+          {product.stock === 0 ? 'Нет в наличии' : 'В корзину'}
+        </button>
+        {isAdmin && (
+          <button 
+            className={styles.moderationBtn} 
+            onClick={handleReturnToModeration}
+            title="Вернуть на модерацию"
+          >
+            <FiRotateCcw />
+          </button>
+        )}
+      </div>
     </div>
   )
 }

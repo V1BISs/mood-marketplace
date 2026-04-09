@@ -5,12 +5,14 @@ import { getOrderById, updateOrderStatus } from "../services/orderService";
 import Cards from "react-credit-cards-2";
 import "react-credit-cards-2/dist/es/styles-compiled.css";
 import { PatternFormat } from "react-number-format";
+import { useToast } from "@/shared/context/ToastContext";
 import styles from "./PaymentPage.module.css";
 
 const PaymentPage = () => {
   const { orderId } = useParams();
   const { user } = useSelector((state) => state.auth);
   const navigate = useNavigate();
+  const { addToast } = useToast();
 
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -38,13 +40,14 @@ const PaymentPage = () => {
         }
       } catch (err) {
         setError("Ошибка загрузки заказа");
+        addToast("Ошибка загрузки заказа", "error");
       } finally {
         setLoading(false);
       }
     };
 
     loadOrder();
-  }, [orderId, user]);
+  }, [orderId, user, addToast]);
 
   const processPayment = () => {
     return new Promise((resolve, reject) => {
@@ -89,10 +92,11 @@ const PaymentPage = () => {
         "paid",
         new Date().toISOString()
       );
+      addToast("Оплата прошла успешно!", "success");
       navigate("/profile/orders");
     } catch (err) {
       console.error("Ошибка оплаты", err);
-      alert(err.message || "Ошибка оплаты");
+      addToast(err.message || "Ошибка оплаты", "error");
     } finally {
       setPaymentProcessing(false);
     }

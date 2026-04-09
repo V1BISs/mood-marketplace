@@ -1,15 +1,17 @@
 import { useState } from 'react'
 import { FiX } from 'react-icons/fi'
+import { useToast } from '@/shared/context/ToastContext'
 import styles from './StockModal.module.css'
 
 const StockModal = ({ product, onClose, onUpdate }) => {
+  const { addToast } = useToast()
   const [quantity, setQuantity] = useState(1)
   const [loading, setLoading] = useState(false)
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     if (quantity <= 0) {
-      alert('Количество должно быть больше 0')
+      addToast('Количество должно быть больше 0', 'error')
       return
     }
 
@@ -17,10 +19,11 @@ const StockModal = ({ product, onClose, onUpdate }) => {
     try {
       const newStock = product.stock + quantity
       await onUpdate(product.id, { stock: newStock })
+      addToast(`Склад пополнен: +${quantity} шт. товара "${product.name}"`, 'success')
       onClose()
     } catch (err) {
       console.error('Ошибка пополнения склада', err)
-      alert('Не удалось пополнить склад')
+      addToast('Не удалось пополнить склад', 'error')
     } finally {
       setLoading(false)
     }

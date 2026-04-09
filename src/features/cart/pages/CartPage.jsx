@@ -4,11 +4,13 @@ import { useNavigate } from 'react-router-dom'
 import { getCart } from '../services/cartService'
 import { setItems, setLoading, setError } from '../store/cartSlice'
 import CartItem from '../components/CartItem'
+import { useToast } from '@/shared/context/ToastContext'
 import styles from './CartPage.module.css'
 
 const CartPage = () => {
   const dispatch = useDispatch()
   const navigate = useNavigate()
+  const { addToast } = useToast()
   const { items, loading, error } = useSelector(state => state.cart)
   const { user } = useSelector(state => state.auth)
   
@@ -24,13 +26,14 @@ const CartPage = () => {
         dispatch(setItems(cart.items))
       } catch (err) {
         dispatch(setError(err.message))
+        addToast('Не удалось загрузить корзину', 'error')
       } finally {
         dispatch(setLoading(false))
       }
     }
     
     loadCart()
-  }, [dispatch, user])
+  }, [dispatch, user, addToast])
 
   const total = items.reduce((sum, item) => {
     const price = item.product.price * (100 - (item.product.discount || 0)) / 100
@@ -47,13 +50,20 @@ const CartPage = () => {
 
   const selectAll = () => {
     setSelectedItems(items.map(item => item.productId))
+    addToast('Все товары выбраны', 'info')
   }
 
   const clearSelected = () => {
     setSelectedItems([])
+    addToast('Выбор снят', 'info')
   }
 
   const handleCheckout = () => {
+    if (items.length === 0) {
+      addToast('Корзина пуста', 'error')
+      return
+    }
+    
     const selectedProducts = items.filter(item => selectedItems.includes(item.productId))
     const productsToCheckout = selectedProducts.length > 0 ? selectedProducts : items
     

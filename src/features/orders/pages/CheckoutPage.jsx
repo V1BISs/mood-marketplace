@@ -4,12 +4,14 @@ import { useSelector, useDispatch } from 'react-redux';
 import { createOrderByUser as createOrder } from '../services/orderService';
 import { clearCart } from '../../cart/services/cartService';
 import { setItems } from '../../cart/store/cartSlice';
+import { useToast } from '@/shared/context/ToastContext';
 import styles from './CheckoutPage.module.css';
 
 const CheckoutPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const { addToast } = useToast();
   const { user } = useSelector(state => state.auth);
   const selectedItems = location.state?.selectedItems || [];
 
@@ -27,6 +29,7 @@ const CheckoutPage = () => {
     e.preventDefault();
     if (!address || !phone) {
       setError('Заполните все поля');
+      addToast('Заполните все поля', 'error');
       return;
     }
 
@@ -63,9 +66,11 @@ const CheckoutPage = () => {
       }
       dispatch(setItems(updatedItems));
 
+      addToast('Заказ успешно оформлен! Перенаправление на оплату...', 'success');
       navigate(`/payment/${newOrder.id}`);
     } catch (err) {
       setError(err.message || 'Ошибка оформления заказа');
+      addToast(err.message || 'Ошибка оформления заказа', 'error');
     } finally {
       setLoading(false);
     }

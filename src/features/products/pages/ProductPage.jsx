@@ -1,11 +1,14 @@
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 import { FaStar, FaStarHalfAlt, FaRegStar } from 'react-icons/fa'
 import { getProductById } from '../services/productService'
 import { addToCart, getCart } from '@/features/cart/services/cartService'
 import { setItems } from '@/features/cart/store/cartSlice'
-import { useDispatch } from 'react-redux'
+import { getProductReviews, getUserReviewForProduct } from '@/features/reviews/services/reviewService'
+import { getAll, STORAGE_KEYS } from '@/shared/lib/api'
+import ReviewForm from '@/features/reviews/components/ReviewForm'
+import ReviewList from '@/features/reviews/components/ReviewList'
 import styles from './ProductPage.module.css'
 
 const ProductPage = () => {
@@ -17,6 +20,9 @@ const ProductPage = () => {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [addingToCart, setAddingToCart] = useState(false)
+  const [reviews, setReviews] = useState([])
+  const [userCanReview, setUserCanReview] = useState(false)
+  const [userHasReviewed, setUserHasReviewed] = useState(false)
 
   useEffect(() => {
     const loadProduct = async () => {
@@ -36,6 +42,30 @@ const ProductPage = () => {
     
     loadProduct()
   }, [productId])
+
+  useEffect(() => {
+    const loadReviews = async () => {
+      if (!product) return
+      
+      const productReviews = await getProductReviews(product.id)
+      setReviews(productReviews)
+      
+      if (user) {
+        const ordersByUser = await getAll(STORAGE_KEYS.ORDERS_BY_USER)
+        const userOrders = ordersByUser?.[user.id] || []
+        const deliveredOrders = userOrders.filter(order => order.status === 'delivered')
+        const purchasedProductIds = deliveredOrders.flatMap(order => 
+          order.items.map(item => item.productId)
+        )
+        setUserCanReview(purchasedProductIds.includes(product.id))
+        
+        const existingReview = await getUserReviewForProduct(user.id, product.id)
+        setUserHasReviewed(!!existingReview)
+      }
+    }
+    
+    loadReviews()
+  }, [product, user])
 
   const handleAddToCart = async () => {
     if (!user) {
@@ -64,6 +94,14 @@ const ProductPage = () => {
     } finally {
       setAddingToCart(false)
     }
+  }
+
+  const handleReviewSubmitted = async () => {
+    const updatedReviews = await getProductReviews(product.id)
+    setReviews(updatedReviews)
+    setUserHasReviewed(true)
+    const updatedProduct = await getProductById(product.id)
+    setProduct(updatedProduct)
   }
 
   const renderStars = (rating) => {
@@ -163,6 +201,23 @@ const ProductPage = () => {
             </button>
           </div>
         </div>
+        
+        <ReviewList reviews={reviews} onReviewUpdated={handleReviewSubmitted} />
+        
+        {user && userCanReview && !userHasReviewed && (
+          <ReviewForm
+            productId={product.id}
+            userId={user.id}
+            userName={user.name}
+            onReviewSubmitted={handleReviewSubmitted}
+          />
+        )}
+        
+        {user && userHasReviewed && (
+          <div className={styles.alreadyReviewed}>
+            Вы уже оставили отзыв на этот товар
+          </div>
+        )}
       </div>
     </div>
   )

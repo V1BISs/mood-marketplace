@@ -1,50 +1,50 @@
-import { useState } from 'react'
-import { useDispatch } from 'react-redux'
-import { useNavigate } from 'react-router-dom'
-import { registerUser } from '../services/authService'
-import { setUser } from '../store/authSlice'
-import Button from '@/shared/ui/Button/Button'
-import Input from '@/shared/ui/Input/Input'
-import styles from '../pages/AuthPage.module.css'
+import { useState } from "react";
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { registerUser } from "../services/authService";
+import { setUser } from "../store/authSlice";
+import Button from "@/shared/ui/Button/Button";
+import Input from "@/shared/ui/Input/Input";
+import styles from "../pages/AuthPage.module.css";
 
 const RegisterBuyerForm = () => {
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    password: '',
-    role: 'buyer',
-  })
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
+    name: "",
+    email: "",
+    password: "",
+    role: "buyer",
+  });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  const dispatch = useDispatch()
-  const navigate = useNavigate()
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
-    const { name, value } = e.target
-    setFormData(prev => ({ ...prev, [name]: value }))
-  }
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
 
   const handleSubmit = async (e) => {
-  e.preventDefault()
-  setLoading(true)
-  setError('')
+    e.preventDefault();
+    setLoading(true);
+    setError("");
 
-  try {
-    if (formData.password.length < 8) {
-      throw new Error('Пароль должен быть не менее 8 символов')
+    try {
+      if (formData.password.length < 8) {
+        throw new Error("Пароль должен быть не менее 8 символов");
+      }
+
+      const user = await registerUser(formData);
+      dispatch(setUser(user));
+      localStorage.setItem("user", JSON.stringify(user));
+      navigate("/login");
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
     }
-
-    const user = await registerUser(formData)
-    dispatch(setUser(user))
-    localStorage.setItem('user', JSON.stringify(user))  // добавить
-    navigate('/login')
-  } catch (err) {
-    setError(err.message)
-  } finally {
-    setLoading(false)
-  }
-}
+  };
 
   return (
     <form onSubmit={handleSubmit} className={styles.form}>
@@ -86,10 +86,10 @@ const RegisterBuyerForm = () => {
       {error && <div className={styles.errorText}>{error}</div>}
 
       <Button type="submit" variant="primary" disabled={loading}>
-        {loading ? 'Регистрация...' : 'Зарегистрироваться'}
+        {loading ? "Регистрация..." : "Зарегистрироваться"}
       </Button>
     </form>
-  )
-}
+  );
+};
 
-export default RegisterBuyerForm
+export default RegisterBuyerForm;

@@ -1,0 +1,141 @@
+.page {
+  min-height: calc(100vh - 80px);
+  background: var(--color-background);
+}
+
+.container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: var(--spacing-xl) var(--spacing-lg);
+}
+
+.title {
+  font-size: var(--font-size-2xl);
+  font-weight: 700;
+  margin-bottom: var(--spacing-xl);
+}
+
+.content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-xl);
+}
+
+.products {
+  border: 1px solid var(--color-border);
+  border-radius: var(--spacing-lg);
+  padding: var(--spacing-lg);
+}
+
+.products h2 {
+  margin-bottom: var(--spacing-lg);
+  font-size: var(--font-size-lg);
+}
+
+.productItem {
+  display: flex;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md) 0;
+  border-bottom: 1px solid var(--color-border);
+  align-items: center;
+}
+
+.productItem img {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: var(--spacing-sm);
+}
+
+.productItem > div {
+  flex: 1;
+}
+
+.total {
+  margin-top: var(--spacing-lg);
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  text-align: right;
+}
+
+.form {
+  border: 1px solid var(--color-border);
+  border-radius: var(--spacing-lg);
+  padding: var(--spacing-lg);
+}
+
+.form h2 {
+  margin-bottom: var(--spacing-lg);
+  font-size: var(--font-size-lg);
+}
+
+.field {
+  margin-bottom: var(--spacing-lg);
+}
+
+.field label {
+  display: block;
+  margin-bottom: var(--spacing-xs);
+  font-weight: 500;
+}
+
+.field input {
+  width: 100%;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: 1px solid var(--color-border);
+  border-radius: var(--spacing-sm);
+  font-size: var(--font-size-base);
+}
+
+.field input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+}
+
+.error {
+  color: var(--color-error);
+  margin-bottom: var(--spacing-md);
+}
+
+.submitBtn {
+  width: 100%;
+  padding: var(--spacing-md);
+  background: var(--color-primary);
+  color: white;
+  border: none;
+  border-radius: var(--spacing-sm);
+  font-size: var(--font-size-base);
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.submitBtn:hover {
+  background: #2563eb;
+}
+
+.submitBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.empty {
+  text-align: center;
+  padding: var(--spacing-2xl);
+}
+
+.empty button {
+  margin-top: var(--spacing-md);
+  padding: var(--spacing-sm) var(--spacing-lg);
+  background: var(--color-primary);
+  color: white;
+  border: none;
+  border-radius: var(--spacing-sm);
+  cursor: pointer;
+}
+
+@media (max-width: 768px) {
+  .content {
+    grid-template-columns: 1fr;
+  }
+}

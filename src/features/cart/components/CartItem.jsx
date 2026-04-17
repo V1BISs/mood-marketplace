@@ -10,6 +10,8 @@ const CartItem = ({ item, isSelected, onSelect }) => {
   const { items } = useSelector(state => state.cart)
   const { addToast } = useToast()
   
+  const imageUrl = item.product.imageUrl || 'https://via.placeholder.com/160x213'
+  
   const handleQuantityChange = async (newQuantity) => {
     const maxStock = item.product.stock
     const validQuantity = Math.min(Math.max(1, newQuantity), maxStock)
@@ -58,21 +60,25 @@ const CartItem = ({ item, isSelected, onSelect }) => {
         onChange={() => onSelect(item.productId)}
         className={styles.checkbox}
       />
-      <img src={item.product.imageUrl} alt={item.product.name} />
-      <div className={styles.name}>{item.product.name}</div>
-      <div className={styles.price}>{priceWithDiscount} ₽</div>
-      <input 
-        type="number" 
-        className={styles.quantityInput}
-        value={item.quantity}
-        onChange={(e) => handleQuantityChange(Number(e.target.value))}
-        min="1"
-        max={item.product.stock}
-      />
+      <img src={imageUrl} alt={item.product.name} />
+      <div className={styles.productInfo}>
+        <div className={styles.name}>{item.product.name}</div>
+        <div className={styles.price}>{Math.round(priceWithDiscount)} ₽</div>
+        <div className={styles.quantityControls}>
+          <input 
+            type="number" 
+            className={styles.quantityInput}
+            value={item.quantity}
+            onChange={(e) => handleQuantityChange(Number(e.target.value))}
+            min="1"
+            max={item.product.stock}
+          />
+          <button className={styles.removeBtn} onClick={handleRemove}>
+            Удалить
+          </button>
+        </div>
+      </div>
       <div className={styles.total}>{Math.round(totalPrice)} ₽</div>
-      <button className={styles.removeBtn} onClick={handleRemove}>
-        Удалить
-      </button>
     </div>
   )
 }

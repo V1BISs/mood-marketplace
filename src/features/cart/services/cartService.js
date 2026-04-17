@@ -28,10 +28,24 @@ export const addToCart = async (userId, productId, product, quantity = 1) => {
   const cart = await getCart(userId);
   const existingItem = cart.items.find((item) => item.productId === productId);
 
+  const imageUrl = product.imageUrl || (product.images && product.images[0]) || 'https://via.placeholder.com/200';
+
   if (existingItem) {
     existingItem.quantity += quantity;
   } else {
-    cart.items.push({ productId, product, quantity });
+    cart.items.push({
+      productId,
+      product: {
+        id: product.id,
+        name: product.name,
+        price: product.price,
+        discount: product.discount || 0,
+        stock: product.stock,
+        imageUrl: imageUrl,
+        sellerId: product.sellerId,
+      },
+      quantity,
+    });
   }
 
   await saveCart(userId, cart.items);

@@ -91,8 +91,9 @@
 }
 
 .orderItem img {
-  width: 60px;
-  height: 60px;
+  width: 120px;
+  height: auto;
+  aspect-ratio: 960 / 1280;
   object-fit: cover;
   border-radius: var(--spacing-sm);
 }
@@ -137,8 +138,8 @@
   margin-left: var(--spacing-sm);
 }
 
-.shipBtn {
-  display: flex;
+.shipBtn, .deliverBtn {
+  display: inline-flex;
   align-items: center;
   gap: var(--spacing-xs);
   padding: var(--spacing-sm) var(--spacing-lg);
@@ -150,24 +151,19 @@
   font-size: var(--font-size-sm);
 }
 
+.shipBtn:hover, .deliverBtn:hover {
+  background: #2563eb;
+}
+
 .deliverBtn {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--spacing-xs);
-  padding: var(--spacing-sm) var(--spacing-lg);
   background: var(--color-success);
-  color: white;
-  border: none;
-  border-radius: var(--spacing-sm);
-  cursor: pointer;
-  font-size: var(--font-size-sm);
 }
 
 .deliverBtn:hover {
   background: #059669;
 }
 
-.shippedBadge {
+.deliveredBadge {
   display: flex;
   align-items: center;
   gap: var(--spacing-xs);
@@ -175,7 +171,7 @@
   font-size: var(--font-size-sm);
 }
 
-.loading, .empty {
+.empty {
   text-align: center;
   padding: var(--spacing-2xl);
 }
@@ -184,9 +180,20 @@
   margin-bottom: var(--spacing-sm);
 }
 
+.loading {
+  text-align: center;
+  padding: var(--spacing-2xl);
+  font-size: var(--font-size-lg);
+}
+
 @media (max-width: 768px) {
   .container {
     padding: var(--spacing-md);
+  }
+  
+  .title {
+    font-size: var(--font-size-xl);
+    margin-bottom: var(--spacing-lg);
   }
   
   .orderHeader {
@@ -199,8 +206,16 @@
     flex-wrap: wrap;
   }
   
+  .orderItem img {
+    width: 100px;
+    height: auto;
+    aspect-ratio: 960 / 1280;
+    object-fit: cover;
+  }
+  
   .itemInfo {
     flex: 1 0 100%;
+    margin-top: var(--spacing-xs);
   }
   
   .orderFooter {
@@ -208,7 +223,7 @@
     gap: var(--spacing-md);
   }
   
-  .shipBtn {
+  .shipBtn, .deliverBtn {
     width: 100%;
     justify-content: center;
   }

@@ -24,6 +24,8 @@ export const registerUser = async (userData) => {
   const newUser = {
     id: Date.now().toString(),
     ...userData,
+    phone: userData.phone || '',
+    address: userData.address || '',
     isBlocked: false,
     createdAt: new Date().toISOString(),
   };
@@ -31,14 +33,30 @@ export const registerUser = async (userData) => {
   const updatedUsers = [...users, newUser];
   await saveAll(STORAGE_KEYS.USERS, updatedUsers);
 
-  const { _, ...userWithoutPassword } = newUser;
+  const { password: _, ...userWithoutPassword } = newUser;
   return userWithoutPassword;
 };
 
 export const logoutUser = () => {
-    return null
-}
+  return null;
+};
 
 export const getCurrentUser = () => {
-  return null
-}
+  return null;
+};
+
+export const updateUserProfile = async (userId, updates) => {
+  const users = await getAll(STORAGE_KEYS.USERS);
+  const index = users.findIndex(u => u.id === userId);
+  
+  if (index === -1) throw new Error('Пользователь не найден');
+  
+  const updatedUser = { ...users[index], ...updates };
+  users[index] = updatedUser;
+  await saveAll(STORAGE_KEYS.USERS, users);
+  
+  localStorage.setItem('user', JSON.stringify(updatedUser));
+  
+  const { password: _, ...userWithoutPassword } = updatedUser;
+  return userWithoutPassword;
+};

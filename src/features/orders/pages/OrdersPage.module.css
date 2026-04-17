@@ -92,8 +92,9 @@
 }
 
 .orderItem img {
-  width: 70px;
-  height: 70px;
+  width: 120px;
+  height: auto;
+  aspect-ratio: 960 / 1280;
   object-fit: cover;
   border-radius: var(--spacing-sm);
 }
@@ -203,6 +204,11 @@
     padding: var(--spacing-md);
   }
   
+  .title {
+    font-size: var(--font-size-xl);
+    margin-bottom: var(--spacing-lg);
+  }
+  
   .orderHeader {
     flex-direction: column;
     align-items: flex-start;
@@ -213,8 +219,16 @@
     flex-wrap: wrap;
   }
   
+  .orderItem img {
+    width: 100px;
+    height: auto;
+    aspect-ratio: 960 / 1280;
+    object-fit: cover;
+  }
+  
   .itemInfo {
     flex: 1 0 100%;
+    margin-top: var(--spacing-xs);
   }
   
   .orderFooter {

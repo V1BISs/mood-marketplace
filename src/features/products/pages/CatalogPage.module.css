@@ -50,3 +50,33 @@
   font-size: var(--font-size-lg);
   color: var(--color-error);
 }
+
+@media (max-width: 1024px) {
+  .container {
+    padding: var(--spacing-lg) var(--spacing-md);
+  }
+  
+  .title {
+    font-size: var(--font-size-2xl);
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 12px;
+  }
+  
+  .title {
+    font-size: 20px;
+    margin-bottom: 4px;
+  }
+  
+  .subtitle {
+    font-size: 12px;
+  }
+  
+  .filtersSection {
+    padding: 12px;
+    margin-bottom: 16px;
+  }
+}

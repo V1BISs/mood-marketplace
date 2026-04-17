@@ -1,37 +1,52 @@
-import { useDispatch, useSelector } from "react-redux";
-import { Link, useNavigate, useLocation } from "react-router-dom";
-import { logout } from "../../../features/auth/store/authSlice";
-import styles from "./Header.module.css";
+import { useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { Link, useNavigate, useLocation } from 'react-router-dom'
+import { logout } from '../../../features/auth/store/authSlice'
+import { FiMenu, FiX } from 'react-icons/fi'
+import styles from './Header.module.css'
 
 const Header = () => {
-  const { isAuth, user } = useSelector((state) => state.auth);
-  const { items } = useSelector((state) => state.cart);
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-  const location = useLocation();
+  const { isAuth, user } = useSelector((state) => state.auth)
+  const { items } = useSelector((state) => state.cart)
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
+  const location = useLocation()
+  const [menuOpen, setMenuOpen] = useState(false)
 
   const handleLogout = () => {
-    dispatch(logout());
-    localStorage.removeItem("user");
-    navigate("/login");
-  };
+    dispatch(logout())
+    localStorage.removeItem('user')
+    navigate('/login')
+    setMenuOpen(false)
+  }
 
-  const isActive = (path) => location.pathname === path;
+  const isActive = (path) => location.pathname === path
 
-  const cartItemsCount = items.reduce((total, item) => total + item.quantity, 0);
-  const displayCount = cartItemsCount > 100 ? "100+" : cartItemsCount;
+  const cartItemsCount = items.reduce((total, item) => total + item.quantity, 0)
+  const displayCount = cartItemsCount > 100 ? '100+' : cartItemsCount
+
+  const closeMenu = () => setMenuOpen(false)
 
   return (
     <header className={styles.header}>
       <div className={styles.container}>
-        <Link to="/catalog" className={styles.logo}>
+        <Link to="/catalog" className={styles.logo} onClick={closeMenu}>
           MOOD
         </Link>
 
-        <nav className={styles.nav}>
+        <button 
+          className={styles.menuBtn} 
+          onClick={() => setMenuOpen(!menuOpen)}
+          aria-label="Меню"
+        >
+          {menuOpen ? <FiX /> : <FiMenu />}
+        </button>
+
+        <nav className={`${styles.nav} ${menuOpen ? styles.navOpen : ''}`}>
           <Link
             to="/catalog"
-            className={`${styles.navLink} ${isActive("/catalog") ? styles.navLinkActive : ""}`}
+            className={`${styles.navLink} ${isActive('/catalog') ? styles.navLinkActive : ''}`}
+            onClick={closeMenu}
           >
             Каталог
           </Link>
@@ -41,7 +56,8 @@ const Header = () => {
               <div className={styles.cartLinkWrapper}>
                 <Link
                   to="/cart"
-                  className={`${styles.navLink} ${isActive("/cart") ? styles.navLinkActive : ""}`}
+                  className={`${styles.navLink} ${isActive('/cart') ? styles.navLinkActive : ''}`}
+                  onClick={closeMenu}
                 >
                   Корзина
                 </Link>
@@ -51,13 +67,15 @@ const Header = () => {
               </div>
               <Link
                 to="/profile/orders"
-                className={`${styles.navLink} ${isActive("/profile/orders") ? styles.navLinkActive : ""}`}
+                className={`${styles.navLink} ${isActive('/profile/orders') ? styles.navLinkActive : ''}`}
+                onClick={closeMenu}
               >
                 Заказы
               </Link>
               <Link
                 to="/profile"
-                className={`${styles.navLink} ${isActive("/profile") ? styles.navLinkActive : ""}`}
+                className={`${styles.navLink} ${isActive('/profile') ? styles.navLinkActive : ''}`}
+                onClick={closeMenu}
               >
                 Профиль
               </Link>
@@ -71,12 +89,13 @@ const Header = () => {
             </>
           ) : (
             <div className={styles.authLinks}>
-              <Link to="/login" className={styles.authLink}>
+              <Link to="/login" className={styles.authLink} onClick={closeMenu}>
                 Войти
               </Link>
               <Link
-                to="/register"
+                to="/register/buyer"
                 className={`${styles.authLink} ${styles.authLinkPrimary}`}
+                onClick={closeMenu}
               >
                 Регистрация
               </Link>
@@ -85,7 +104,7 @@ const Header = () => {
         </nav>
       </div>
     </header>
-  );
-};
+  )
+}
 
-export default Header;
+export default Header

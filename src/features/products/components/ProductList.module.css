@@ -2,7 +2,7 @@
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: var(--spacing-lg);
-  padding: var(--spacing-lg);
+  padding: var(--spacing-lg) 0;
 }
 
 .empty {
@@ -10,4 +10,28 @@
   padding: var(--spacing-2xl);
   font-size: var(--font-size-lg);
   color: var(--color-text-secondary);
+}
+
+/* Планшеты */
+@media (max-width: 1024px) {
+  .container {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: var(--spacing-md);
+  }
+}
+
+/* Телефоны - 2 товара в строке */
+@media (max-width: 768px) {
+  .container {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    padding: 12px 0;
+  }
+}
+
+/* Маленькие телефоны */
+@media (max-width: 480px) {
+  .container {
+    gap: 8px;
+  }
 }

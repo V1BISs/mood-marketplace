@@ -1,49 +1,70 @@
 .cartItem {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: var(--spacing-lg);
   padding: var(--spacing-lg);
   border-bottom: 1px solid var(--color-border);
   transition: background 0.2s;
+  position: relative;
 }
 
 .cartItem:hover {
   background: rgba(0, 0, 0, 0.02);
 }
 
+.checkbox {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  width: 22px;
+  height: 22px;
+  cursor: pointer;
+  z-index: 1;
+}
+
 .cartItem img {
-  width: 100px;
-  height: 100px;
+  width: 160px;
+  height: auto;
+  aspect-ratio: 960 / 1280;
   object-fit: cover;
   border-radius: var(--spacing-sm);
+  margin-left: 40px;
+}
+
+.productInfo {
+  flex: 2;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  padding-top: var(--spacing-xs);
 }
 
 .name {
-  flex: 2;
-  font-weight: 500;
-  color: var(--color-text-primary);
-}
-
-.price {
-  width: 100px;
+  font-size: var(--font-size-base);
   font-weight: 600;
   color: var(--color-text-primary);
 }
 
-.checkbox {
-  width: 20px;
-  height: 20px;
-  cursor: pointer;
+.price {
+  font-size: var(--font-size-base);
+  font-weight: 500;
+  color: var(--color-text-secondary);
+}
+
+.quantityControls {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  flex-wrap: wrap;
 }
 
 .quantityInput {
   width: 80px;
-  padding: var(--spacing-xs) var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-sm);
   border: 1px solid var(--color-border);
   border-radius: var(--spacing-sm);
   text-align: center;
-  font-size: var(--font-size-sm);
-  transition: border-color 0.2s;
+  font-size: var(--font-size-base);
 }
 
 .quantityInput:focus {
@@ -51,45 +72,66 @@
   border-color: var(--color-primary);
 }
 
-.total {
-  width: 120px;
-  font-weight: 700;
-  color: var(--color-primary);
-}
-
 .removeBtn {
-  padding: var(--spacing-xs) var(--spacing-md);
   background: none;
-  border: 1px solid var(--color-error);
-  border-radius: var(--spacing-sm);
+  border: none;
   color: var(--color-error);
   cursor: pointer;
-  transition: all 0.2s;
   font-size: var(--font-size-sm);
+  padding: var(--spacing-xs);
+  transition: color 0.2s;
 }
 
 .removeBtn:hover {
-  background: var(--color-error);
-  color: white;
+  color: #dc2626;
+  text-decoration: underline;
+}
+
+.total {
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+  color: var(--color-primary);
+  min-width: 120px;
+  text-align: right;
+  padding-top: var(--spacing-xs);
 }
 
 @media (max-width: 768px) {
   .cartItem {
-    flex-wrap: wrap;
-    gap: var(--spacing-sm);
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--spacing-md);
+    padding: var(--spacing-md);
+  }
+  
+  .checkbox {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    width: 20px;
+    height: 20px;
   }
   
   .cartItem img {
-    width: 60px;
-    height: 60px;
+    width: 100%;
+    max-width: 200px;
+    height: auto;
+    margin: 0 auto;
   }
   
-  .name {
-    flex: 1 0 100%;
-    order: 1;
+  .productInfo {
+    width: 100%;
   }
   
-  .price, .quantityInput, .total, .removeBtn {
-    flex: 1;
+  .quantityControls {
+    justify-content: space-between;
+    margin-top: var(--spacing-xs);
+  }
+  
+  .total {
+    text-align: left;
+    margin-top: var(--spacing-sm);
+    padding-top: var(--spacing-sm);
+    border-top: 1px solid var(--color-border);
   }
 }
